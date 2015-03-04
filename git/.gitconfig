@@ -1,0 +1,20 @@
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[user]
+	name = Jared Burrows
+	email = jaredsburrows@gmail.com
+[credential]
+	helper = osxkeychain
+[http]
+[https]
+[http]
+	sslVerify = false
+[push]
+	default = simple
+[color]
+	ui = auto
+[core]
+	editor = vim
+[alias]
+	create-pull-request = !sh -c 'stash pull-request $0'
