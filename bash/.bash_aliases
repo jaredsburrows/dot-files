@@ -1,9 +1,11 @@
 MAC=0
 UBUNTU=0
+LC_NUMERIC="en_US.UTF-8"
 if [[ `uname -a | grep -i darwin` ]]; then
     MAC=1
-    export LC_CTYPE=C
-    export LANG=C
+    # export LC_CTYPE=C
+    # export LANG=C
+    export LANG=en_US.UTF-8
     export JAVA_HOME=$(/usr/libexec/java_home)
     alias eject="diskutil eject"
     alias ll="ls -f1 -alF -G"
@@ -39,13 +41,16 @@ export ANDROID_SDK_ROOT=~/android-sdk
 export PATH=${PATH}:$(find ~/android-sdk/build-tools/ -maxdepth 1 -type d | tr '\n' ':')
 export PATH=${PATH}:~/android-sdk/platform-tools
 export PATH=${PATH}:~/android-sdk/tools
+export PATH=${PATH}:~/android-sdk/tools/bin
 export PATH=${PATH}:~/android-ndk
 export PATH=${PATH}:~/repo/dex2jar-0.0.9.15
 export PATH=${PATH}:~/repo/adb-sync
 export PATH=${PATH}:~/Tools/gradle/bin
 export M2_HOME=~/.m2
+
 function ascreen() {
-    adb shell screencap -p /sdcard/screen.png && adb pull /sdcard/screen.png screen$(date +%s).png  && adb shell rm /sdcard/screen.png
+    devices=( $(adb devices | tail -n +2 | cut -sf 1) )
+    for device in "${devices[@]}"; do echo "Taking screenshot of device: $device"; adb -s $device shell screencap -p /sdcard/screen.png   &>/dev/null && adb -s $device pull /sdcard/screen.png screen$(date +%s).png &>/dev/null && adb -s $device shell rm /sdcard/screen.png &>/ dev/null; done
 }
 
 
@@ -69,12 +74,20 @@ alias move="mv"
 alias cls="printf \"\033c\""
 
 function resizeIcons() {
+	## mipmap
 	find . -path \*/drawable-hdpi/ic_launcher.png -exec sh -c "convert {} -resize 72x72 {}" \;
 	find . -path \*/drawable-ldpi/ic_launcher.png -exec sh -c "convert {} -resize 36x36 {}" \;
 	find . -path \*/drawable-mdpi/ic_launcher.png -exec sh -c "convert {} -resize 48x48 {}" \;
 	find . -path \*/drawable-xhdpi/ic_launcher.png -exec sh -c "convert {} -resize 96x96 {}" \;
 	find . -path \*/drawable-xxhdpi/ic_launcher.png -exec sh -c "convert {} -resize 144x144 {}" \;
 	find . -path \*/drawable-xxxhdpi/ic_launcher.png -exec sh -c "convert {} -resize 192x192 {}" \;
+	## drawables
+	find . -path \*/mipmap-hdpi/ic_launcher.png -exec sh -c "convert {} -resize 72x72 {}" \;
+	find . -path \*/mipmap-ldpi/ic_launcher.png -exec sh -c "convert {} -resize 36x36 {}" \;
+	find . -path \*/mipmap-mdpi/ic_launcher.png -exec sh -c "convert {} -resize 48x48 {}" \;
+	find . -path \*/mipmap-xhdpi/ic_launcher.png -exec sh -c "convert {} -resize 96x96 {}" \;
+	find . -path \*/mipmap-xxhdpi/ic_launcher.png -exec sh -c "convert {} -resize 144x144 {}" \;
+	find . -path \*/mipmap-xxxhdpi/ic_launcher.png -exec sh -c "convert {} -resize 192x192 {}" \;
 }
 
 function idb() {
@@ -193,7 +206,7 @@ function jbdecrypt() {
 }
 
 function fix() {
-	case "$1" in
+   	case "$1" in
 	'help'|'-help'|'--help'|'?')
 		echo -e "Usage: stop [-option]\nOptions:\nmix\tStop Services/Listening\ntcp\tStop Listening TCP Services\njava\tStop Java Processes\nmemory\tFix cache and memory";;
 
